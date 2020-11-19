@@ -3600,6 +3600,16 @@ class SynthTransformer(Transformer):
         # if more channels is desired, must be explicitly set in set_output_format
         self.input_format['channels'] = 1
 
+    def set_output_floats(self, dtype=np.float32):
+        '''In order to determine the output format, pysox looks at the input format.
+        Since we have no input file or array when using Sox's `synth` mode, we
+        have to set the desired values in the `input_format` attribute.
+        '''
+        if dtype not in [np.float32, np.float64]:
+            raise ValueError(f'Invalid dtype: {dtype}')
+        self.input_format['encoding'] = 'floating-point'
+        self.input_format['file_type'] = ENCODINGS_MAPPING[dtype]
+
     def _parse_inputs(self, input_filepath, input_array, sample_rate_in):
         '''Overrides Transformer._parse_inputs
 

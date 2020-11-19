@@ -115,3 +115,28 @@ class TestSynthTransformerNoise(unittest.TestCase):
         got = self.tfm.build_array(sample_rate_in=sr)
         expected = sr * dur
         self.assertEqual(expected, got.size)
+
+    def test_set_output_floats_f32(self):
+        sr = 16000
+        dur = 3
+        dtype = np.float32
+        self.tfm.set_output_floats(dtype)
+        self.tfm.whitenoise(length=dur)
+        got = self.tfm.build_array(sample_rate_in=sr)
+        self.assertEqual(got.dtype, dtype)
+        self.assertLessEqual(np.max(np.abs(got)), 1)
+
+    def test_set_output_floats_f64(self):
+        sr = 16000
+        dur = 3
+        dtype = np.float64
+        self.tfm.set_output_floats(dtype)
+        self.tfm.whitenoise(length=dur)
+        got = self.tfm.build_array(sample_rate_in=sr)
+        self.assertEqual(got.dtype, dtype)
+        self.assertLessEqual(np.max(np.abs(got)), 1)
+
+    def test_set_output_floats_fails(self):
+        dtype = np.int16
+        with self.assertRaises(ValueError):
+            self.tfm.set_output_floats(dtype)
